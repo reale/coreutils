@@ -3613,6 +3613,12 @@ individual output files in turn.  If this option is used, the
 Use output file names containing numbers that are @var{digits} digits
 long instead of the default 2.
 
+@item -o @var{offset}
+@itemx --offset=@var{offset}
+@opindex -n
+@opindex --offset
+Start count of file names at @var{offset} instead of the default 0.
+
 @item -k
 @itemx --keep-files
 @opindex -k

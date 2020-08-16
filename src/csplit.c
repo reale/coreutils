@@ -145,6 +145,9 @@ static char *volatile suffix = NULL;
 /* Number of digits to use in output file names. */
 static int volatile digits = 2;
 
+/* Numerical suffix start value.  */
+static int volatile numeric_suffix_start = 0;
+
 /* Number of files created so far. */
 static unsigned int volatile files_created = 0;
 
@@ -192,6 +195,7 @@ enum
 static struct option const longopts[] =
 {
   {"digits", required_argument, NULL, 'n'},
+  {"offset", required_argument, NULL, 'o'},
   {"quiet", no_argument, NULL, 'q'},
   {"silent", no_argument, NULL, 's'},
   {"keep-files", no_argument, NULL, 'k'},
@@ -932,6 +936,7 @@ split_file (void)
 static char *
 make_filename (unsigned int num)
 {
+  num += numeric_suffix_start;
   strcpy (filename_space, prefix);
   if (suffix)
     sprintf (filename_space + strlen (prefix), suffix, num);
@@ -1355,7 +1360,7 @@ main (int argc, char **argv)
   suppress_matched = false;
   prefix = DEFAULT_PREFIX;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL)) != -1)
+  while ((optc = getopt_long (argc, argv, "f:b:kn:o:sqz", longopts, NULL)) != -1)
     switch (optc)
       {
       case 'f':
@@ -1372,6 +1377,11 @@ main (int argc, char **argv)
 
       case 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, SIZE_MAX), "",
+                             _("invalid number"), 0);
+        break;
+
+      case 'o':
+        numeric_suffix_start = xdectoimax (optarg, 0, MIN (INT_MAX, SIZE_MAX), "",
                              _("invalid number"), 0);
         break;
 
@@ -1504,6 +1514,7 @@ Read standard input if FILE is -\n\
 "), stdout);
       fputs (_("\
   -n, --digits=DIGITS        use specified number of digits instead of 2\n\
+  -o, --offset=OFFSET        allow setting the start value\n\
   -s, --quiet, --silent      do not print counts of output file sizes\n\
   -z, --elide-empty-files    remove empty output files\n\
 "), stdout);
